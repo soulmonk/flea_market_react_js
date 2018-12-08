@@ -9,7 +9,7 @@ class Stats extends Component {
         <Typography variant="h4" gutterBottom component="h2">
           Stats
         </Typography>
-        <Link  to={'/games/number-puzzle'}>Number Puzzles</Link>
+        <Link to={'/games/number-puzzle'}>Number Puzzles</Link>
       </div>
     );
   }

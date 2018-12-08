@@ -12,7 +12,7 @@ class NumberPuzzle extends Component {
 
         </div>
       </div>
-    )
+    );
   }
 }
 

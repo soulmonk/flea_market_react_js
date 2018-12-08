@@ -6,7 +6,6 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import WebIcon from '@material-ui/icons/Web';
 
-
 export const mainListItems = (
   <div>
     <ListItem button component={Link} to='/'>

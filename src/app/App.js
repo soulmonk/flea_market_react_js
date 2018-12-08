@@ -8,7 +8,7 @@ class App extends Component {
       // go to login or main page
       // no only main page
       <div className="App">
-        <Main />
+        <Main/>
       </div>
     );
   }
