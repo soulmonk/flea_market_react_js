@@ -11,7 +11,7 @@ const Content = () => {
       <Route path={'/works'} component={Works}/>
       <Route path={'/about'} component={About}/>
     </Switch>
-  )
+  );
 };
 
-export default Content
+export default Content;
