@@ -20,7 +20,13 @@ const styles = theme => ({
     width: 40
   },
   cell: {
-    flex: '1 100%'
+    background: '#ebebeb',
+    width: 30,
+    height: 30,
+    'text-align': 'center',
+    'vertical-align': 'middle',
+    'line-height': '30px',
+    cursor: 'pointer'
   },
   gameMap: {
     display: 'flex',
@@ -33,8 +39,12 @@ const styles = theme => ({
     'flex-direction': 'row',
     flex: '1 100%'
   },
-  cellDisabled: {
-    color: '#989d1b'
+  cellTotal: {
+    // color: '',
+    background: '#989d1b'
+  },
+  cellSelected: {
+    background: '#704c9d'
   },
   control: {
     padding: theme.spacing.unit * 2
@@ -42,53 +52,63 @@ const styles = theme => ({
 });
 
 function Cell(props) {
-  const {classes} = props;
+  const {classes, item, total} = props;
+
   return (
-    <div className={classNames(classes.cell, props.disabled && classes.cellDisabled)}>
-      {props.value}
+    <div
+      className={classNames(classes.cell, total && classes.cellTotal, item.selected && classes.cellSelected)}
+      onClick={props.onClick}
+    >
+      {item.value}
     </div>
   );
 }
 
-function random() {
-  return Math.floor(Math.random() * 9) + 1;
+function random(max = 9) {
+  return Math.floor(Math.random() * max) + 1;
 }
 
-/*
-* N|N|N|N T
-* N|N|N|N T
-* N|N|N|N T
-* N|N|N|N T
-* T T T T
-* */
+// TODO integration with server, save generated map.
+// TODO add levels instead of sizes
 function generateMap(n = 3, m = 3) {
   const res = [...new Array(n + 1)]
-    .map(() => new Array(m + 1).fill(0));
+    .map(() => {
+      return [...new Array(m + 1)]
+        .map(() => ({
+          value: 0,
+          used: false
+        }));
+    });
+
+  // TODO 1 in row should be selected
 
   for (let i = 0; i < n; i++) {
+
     for (let j = 0; j < m; j++) {
-      const v = random();
-      res[i][j] = v;
-      res[n][j] += v;
+      res[i][j].value = random();
+    }
+    const selected = [];
+    const maxSelected = random(m - 1);
+    while (maxSelected !== selected.length) {
+      let j = random(m) - 1;
+      if (selected.includes(j)) {
+        continue;
+      }
+      selected.push(j);
+      res[n][j].value += res[i][j].value;
+      res[i][j].used = true;
     }
 
-    res[i][m] = res[i].slice(0, -1).reduce((sum, v) => sum + v, 0);
+    res[i][m].value = selected.reduce((sum, j) => sum + res[i][j].value, 0);
   }
   return res;
 }
 
-class NumberPuzzle extends Component {
+function calcWin(map) {
+  return map.every(cells => cells.every(item => (!item.selected && !item.used) || item.selected === item.used));
+}
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      map: false,
-      size: {
-        n: 3,
-        m: 3
-      }
-    }
-  }
+class NumberPuzzle extends Component {
 
   handleSizeChange = name => event => {
     const {size} = this.state;
@@ -98,25 +118,52 @@ class NumberPuzzle extends Component {
     });
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      map: false,
+      size: {
+        n: 3,
+        m: 3
+      },
+      done: false
+    };
+  }
+
   generateMap() {
     const {n, m} = this.state.size;
     this.setState({
+      done: false,
       map: generateMap(n, m)
+    });
+  }
+
+  handleClick(i, j) {
+    const {map, done} = this.state;
+    if (done) {
+      return;
+    }
+    map[i][j].selected = !map[i][j].selected;
+    this.setState({
+      map,
+      done: calcWin(map)
     });
   }
 
   renderMap(map) {
     const {classes} = this.props;
+    // TODO vertical align, styles
     return (
       <div className={classes.gameMap}>
         {map.map((cells, i) => (
           <div className={classes.mapRow} key={i}>
-            {cells.map((value, j) => (
+            {cells.map((item, j) => (
               <Cell
-                value={i === map.length - 1 && j === cells.length - 1 ? '' : value}
+                item={i === map.length - 1 && j === cells.length - 1 ? {value: ''} : item}
                 key={i * cells.length + j}
-                disabled={i === map.length - 1 || j === cells.length - 1}
+                total={i === map.length - 1 || j === cells.length - 1}
                 classes={classes}
+                onClick={() => this.handleClick(i, j)}
               />
             ))}
           </div>
@@ -129,9 +176,15 @@ class NumberPuzzle extends Component {
     const {classes} = this.props;
     const {map} = this.state;
     let displayMap;
+    let stats = '..';
     if (map === false) {
-      displayMap = 'First generate map';
+      stats = 'First generate map';
     } else {
+      if (calcWin(map)) {
+        stats = 'done';
+      } else {
+        stats = 'in progress';
+      }
       displayMap = this.renderMap(map);
     }
     return (
@@ -169,6 +222,9 @@ class NumberPuzzle extends Component {
                   </Grid>
                 </Grid>
               </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <div>{stats}</div>
             </Grid>
             <Grid item xs={12}>
               <Grid container spacing={8}>
