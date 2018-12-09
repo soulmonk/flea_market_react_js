@@ -7,7 +7,7 @@ import {Link} from 'react-router-dom';
 import WebIcon from '@material-ui/icons/Web';
 
 export const mainListItems = (
-  <div>
+  <>
     <ListItem button component={Link} to='/'>
       <ListItemIcon>
         <DashboardIcon/>
@@ -21,5 +21,5 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Games"/>
     </ListItem>
-  </div>
+  </>
 );

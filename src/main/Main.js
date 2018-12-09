@@ -12,10 +12,10 @@ import List from '@material-ui/core/List';
 import {mainListItems} from './listItems';
 import MenuIcon from '@material-ui/icons/Menu';
 import {Route, Switch} from 'react-router-dom';
-import Home from '../temporary/Home';
 import Games from '../games/Games';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Home from '../home/Home';
 
 const drawerWidth = 240;
 
@@ -84,12 +84,6 @@ const styles = theme => ({
     padding: theme.spacing.unit * 3,
     height: '100vh',
     overflow: 'auto'
-  },
-  chartContainer: {
-    marginLeft: -22
-  },
-  tableContainer: {
-    height: 320
   },
   h5: {
     marginBottom: theme.spacing.unit * 2

@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       // go to login or main page
-      // no only main page
+      // now only main page
       <div className="App">
         <Main/>
       </div>

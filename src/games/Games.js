@@ -6,12 +6,12 @@ import Stats from './stats/Stats';
 class Games extends Component {
   render() {
     return (
-      <div>
+      <>
         <Switch>
           <Route exact path={'/games'} component={Stats}/>
           <Route path={'/games/number-puzzle'} component={NumberPuzzle}/>
         </Switch>
-      </div>
+      </>
     );
   }
 }
