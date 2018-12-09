@@ -139,11 +139,22 @@ class NumberPuzzle extends Component {
   }
 
   handleClick(i, j) {
-    const {map, done} = this.state;
+    // todo click on total disable (hint do not use) all not selected
+    // todo hold click disable cell
+    // todo count moves
+    const {map, done, size} = this.state;
     if (done) {
       return;
     }
-    map[i][j].selected = !map[i][j].selected;
+    if (i === size.n) {
+      return
+      // map[i][j].value = 'n';
+    } else if (j === size.m) {
+      // map[i][j].value = 'm';
+      return
+    } else {
+      map[i][j].selected = !map[i][j].selected;
+    }
     this.setState({
       map,
       done: calcWin(map)
@@ -152,16 +163,16 @@ class NumberPuzzle extends Component {
 
   renderMap(map) {
     const {classes} = this.props;
-    // TODO vertical align, styles
+    const {n, m} = this.state.size;
     return (
       <div className={classes.gameMap}>
         {map.map((cells, i) => (
           <div className={classes.mapRow} key={i}>
             {cells.map((item, j) => (
               <Cell
-                item={i === map.length - 1 && j === cells.length - 1 ? {value: ''} : item}
+                item={i === n && j === m ? {value: ''} : item}
                 key={i * cells.length + j}
-                total={i === map.length - 1 || j === cells.length - 1}
+                total={i === n || j === m}
                 classes={classes}
                 onClick={() => this.handleClick(i, j)}
               />
@@ -198,28 +209,28 @@ class NumberPuzzle extends Component {
               <Grid container spacing={8}>
                 <Grid item>
                   <Button variant="contained" className={classes.button} onClick={() => this.generateMap()}>Generate</Button>
-                  <Grid item>
-                    <Input
-                      id="size-n"
-                      label="N"
-                      className={classes.sizeField}
-                      value={this.state.size.n}
-                      onChange={this.handleSizeChange('n')}
-                      type="number"
-                      inputProps={{min: 3, max: 9}}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Input
-                      id="size-m"
-                      label="M"
-                      className={classes.sizeField}
-                      value={this.state.size.m}
-                      onChange={this.handleSizeChange('m')}
-                      type="number"
-                      inputProps={{min: 3, max: 9}}
-                    />
-                  </Grid>
+                </Grid>
+                <Grid item>
+                  <Input
+                    id="size-n"
+                    label="N"
+                    className={classes.sizeField}
+                    value={this.state.size.n}
+                    onChange={this.handleSizeChange('n')}
+                    type="number"
+                    inputProps={{min: 3, max: 9}}
+                  />
+                </Grid>
+                <Grid item>
+                  <Input
+                    id="size-m"
+                    label="M"
+                    className={classes.sizeField}
+                    value={this.state.size.m}
+                    onChange={this.handleSizeChange('m')}
+                    type="number"
+                    inputProps={{min: 3, max: 9}}
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -232,6 +243,18 @@ class NumberPuzzle extends Component {
                   {displayMap}
                 </Grid>
               </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <h4>TODOS (use material typography)</h4>
+              <ol>
+                <li>add server todods for game</li>
+                <li>add timer</li>
+                <li>click on total disable (hint do not use) all not selected</li>
+                <li>hold click disable cell</li>
+                <li>count moves</li>
+                <li>integration with server, save generated map.</li>
+                <li>add levels instead of sizes</li>
+              </ol>
             </Grid>
           </Grid>
 
