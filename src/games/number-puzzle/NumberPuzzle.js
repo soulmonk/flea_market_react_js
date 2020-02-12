@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography'
 
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
+import ToggleButton from '@material-ui/lab/ToggleButton'
 import Input from '@material-ui/core/Input'
 import * as PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core'
@@ -18,6 +19,9 @@ const styles = theme => ({
   },
   sizeField: {
     width: 40
+  },
+  hint: {
+    height: 25
   },
   cell: {
     background: '#ebebeb',
@@ -183,6 +187,7 @@ class NumberPuzzle extends Component {
         n: 3,
         m: 3
       },
+      hint: false,
       done: false
     }
   }
@@ -216,10 +221,22 @@ class NumberPuzzle extends Component {
 
   handleClick (i, j) {
     // todo click on total disable (hint do not use) all not selected
-    // todo hold click disable cell
     // todo count moves
-    const { map, done, size, last } = this.state
+    const { map, done, size, last, hint } = this.state
     if (done) {
+      return
+    }
+    if (hint) {
+      if (i === size.n || j === size.m) {
+        return
+      }
+      map[i][j].state = map[i][j].used ? 'selected' : 'inactive'
+      this.setState({
+        map,
+        hint: false,
+        last: '',
+        done: calcWin(map)
+      })
       return
     }
     if (last === `${i}${j}`) {
@@ -271,7 +288,7 @@ class NumberPuzzle extends Component {
 
   render () {
     const { classes } = this.props
-    const { map } = this.state
+    const { map, done, hint } = this.state
     let displayMap
     let stats = '..'
     if (map === false) {
@@ -290,20 +307,29 @@ class NumberPuzzle extends Component {
           Number Puzzle
         </Typography>
         <div>
-          <Grid container className={classes.root} spacing={8}>
+          <Grid container className={classes.root} spacing={2}>
             <Grid item xs={12}>
               <GenerateMap classes={classes} generateMap={(n, m) => this.generateMap(n, m)}/>
             </Grid>
             <Grid item xs={12}>
               <div>stats: {stats}</div>
             </Grid>
-            <Grid item xs={12}>
-              <Grid container spacing={8}>
+            {map ? (<Grid item xs={12}>
+              <Grid container spacing={1}>
+                <Grid item xs={12}>
+                  <ToggleButton
+                    value="check"
+                    disabled={done}
+                    className={classes.hint}
+                    selected={!hint}
+                    aria-label="label"
+                    onChange={() => this.useHint()}>Hint</ToggleButton>
+                </Grid>
                 <Grid item>
                   {displayMap}
                 </Grid>
               </Grid>
-            </Grid>
+            </Grid>) : ''}
             <Grid item xs={12}>
               <h4>TODOS (use material typography)</h4>
               <ol>
@@ -321,6 +347,12 @@ class NumberPuzzle extends Component {
         </div>
       </div>
     )
+  }
+
+  useHint () {
+    const { done, hint } = this.state
+    if (done) return
+    this.setState({ hint: !hint })
   }
 }
 
